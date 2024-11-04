@@ -1,6 +1,12 @@
 <template>
-  <div class="hello">
+  <div class="hello" :id="msg">
     <h1>{{ msg }}</h1>
+    <h1>{{ from }}</h1>
+    <button :disabled=true>button is disabled</button>
+    <button v-bind="attribute">button is disabled</button>
+    <button v-bind="attribute" @click="change">{{ age }}</button>
+    <button v-bind="attribute" @click="change">{{userInfo.age}}</button>
+    <button v-bind="attribute" @click="changeFullName">{{fullName}}</button>
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
       check out the
@@ -31,10 +37,55 @@
 </template>
 
 <script>
+import { computed, reactive, ref } from 'vue';
+
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  setup(){
+    const from = "From Hanoi"
+    const attribute = {
+      disabled : false,
+      style : {
+        color :"red"
+      }
+    }
+    const age = ref(10)
+    const userInfo = reactive({
+      age:10,
+      name : "huy",
+      items:[1,2,3,4,5]
+    })
+
+    const change = () => {
+      age.value++;
+      userInfo.age++;
+    }
+    const firstName = ref("1")
+    const lastName = ref("2")
+    const fullName = computed({
+      get: () => `${firstName.value} ${lastName.value}`,
+      set: (newValue) => {
+      [firstName.value, lastName.value = ""] = newValue.split(" ");
+      },
+    });
+
+    const changeFullName = () => {
+      change()
+      fullName.value = `1 ${age.value}`;
+    }
+
+    return {
+      from, 
+      attribute,
+      age,
+      userInfo,
+      fullName,
+      change,
+      changeFullName
+    }
   }
 }
 </script>
