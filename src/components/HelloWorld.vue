@@ -26,6 +26,59 @@
     <ul>
       <li v-for="item in array" :key="item.name"> {{ item.name }} - {{ item.age }}</li>      
     </ul>
+    <br/>
+    <div @click="clickFather">
+      <button @click.stop="clickSon">Son</button>
+      Father
+    </div>
+    <!--prevent = k reload lại form-->
+    <form>
+      <button @click.prevent.stop="submitForm">Submit</button>
+    </form>
+    <!-- v model-->
+     <input @input="changeName" :value="inputValue"/>
+     <h1>{{ inputValue }}</h1>
+     <h1>{{ dataModel }}</h1>
+     <input v-model.lazy="dataModel"/>
+     <br/>
+     <h1>{{ onceCheckBox }}</h1>
+     <input type="checkbox" v-model="onceCheckBox"/>
+
+     <h1>{{ multipleCheckBox }}</h1>
+     <input type="checkbox" v-model="multipleCheckBox" value="A" id="A"/>
+     <label for="A">A</label>
+     <input type="checkbox" v-model="multipleCheckBox" value="B" id="B"/>
+     <label for="B">B</label>
+     <input type="checkbox" v-model="multipleCheckBox" value="C" id="C"/>
+     <label for="C">C</label>
+     <input type="checkbox" v-model="multipleCheckBox" value="D" id="D"/>
+     <label for="D">D</label>
+
+     <h1>{{ multipleRadio }}</h1>
+     <input type="radio" v-model="multipleRadio" value="A" id="A-R"/>
+     <label for="A-R">A</label>
+     <input type="radio" v-model="multipleRadio" value="B" id="B-R"/>
+     <label for="B-R">B</label>
+     <input type="radio" v-model="multipleRadio" value="C" id="C-R"/>
+     <label for="C-R">C</label>
+     <input type="radio" v-model="multipleRadio" value="D" id="D-R"/>
+     <label for="D-R">D</label>
+
+     <h1>{{ select }}</h1>
+     <select v-model="select">
+        <option  value="SELECT A">Select A</option>
+        <option  value="SELECT B">Select B</option>
+        <option  value="SELECT C">Select C</option>
+        <option  value="SELECT D">Select D</option>
+     </select>
+
+     <h1>{{ onceCheckBox }}</h1>
+     <input type="checkbox" v-model="onceCheckBox" true-value="yes" false-value="no"/>
+     <br/>
+     <!--Watcher-->
+     <input type="text" v-model="watcherText" :disabled="isLoading"/>
+     <br/>
+     <p>Answer:{{ watcherTextAnswer }}</p>
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
       check out the
@@ -56,7 +109,7 @@
 </template>
 
 <script>
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, onUnmounted, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onUpdated, watch } from 'vue';
 
 export default {
   name: 'HelloWorld',
@@ -64,6 +117,7 @@ export default {
     msg: String
   },
   setup(){
+    console.log('Component is before create');
     const from = "From Hanoi"
     const attribute = {
       disabled : false,
@@ -122,6 +176,84 @@ export default {
       name: 'Huy Ne',
       age: 19
     }])
+
+    //event bubbling
+    const father = "A"
+    const son = "B"
+
+    const clickFather = () => {
+      alert('Click Father')
+    }
+
+    const clickSon = () => {
+      alert('Click Son')
+    }
+
+    const submitForm = () => {
+      alert('Submit Form')
+    }
+
+    //v-model
+    const inputValue = ref('YourName')
+
+    const changeName = (e) => {
+      inputValue.value = e.target.value
+    }
+
+    const dataModel = ref('Model')
+    const onceCheckBox = ref(false)
+    const multipleCheckBox = ref([])
+    const multipleRadio = ref("E")
+    const select = ref("SELECT E") 
+
+    //watcher 
+    const watcherText = ref("Enter new question")
+    const isLoading = ref(false)
+    const watcherTextAnswer = ref("No question")
+    watch(watcherText,async(newValue,oldValue)=> {
+      console.log(newValue,oldValue)
+
+      if(newValue.endsWith('?')){
+        try {
+          console.log('call')
+          isLoading.value = true
+          watcherTextAnswer.value = "thinking"
+          const data = await fetch("https://yesno.wtf/api")
+          watcherTextAnswer.value = (await data.json()).answer
+        } catch (error) {
+          console.log('error',error)
+          watcherTextAnswer.value = "error"
+        }finally{
+          console.log('finish')
+          isLoading.value = false
+        }
+      }      
+    })
+   
+    console.log('Component was created');
+    onBeforeMount(()=>{
+      //before render 
+      console.log("Component before mount!");
+    })
+    onMounted(() => {
+      console.log("Component mount!");
+    });
+
+    onBeforeUpdate(()=>{
+      console.log("Component before update!");
+    })
+
+    onUpdated(()=>{
+      console.log("Component updated!");
+    })
+
+    onBeforeUnmount(()=>{
+      console.log("Component before unmount!");
+    })
+
+    onUnmounted(() => {
+      console.log("Component unmount!");
+    });
     return {
       from, 
       attribute,
@@ -132,10 +264,26 @@ export default {
       activeObject,
       condition,
       array,
+      father,
+      son,
+      inputValue,
+      dataModel,
+      onceCheckBox,
+      multipleCheckBox,
+      multipleRadio,
+      select,
+      watcherText,
+      watcherTextAnswer,
+      isLoading,
+      //func
       change,
       changeFullName,
       changeActive,
-      login
+      login,
+      clickFather,
+      clickSon,
+      submitForm,
+      changeName
     }
   }
 }
