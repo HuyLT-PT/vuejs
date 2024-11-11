@@ -7,6 +7,25 @@
     <button v-bind="attribute" @click="change">{{ age }}</button>
     <button v-bind="attribute" @click="change">{{userInfo.age}}</button>
     <button v-bind="attribute" @click="changeFullName">{{fullName}}</button>
+    <button class="button active">Click me</button>
+    <!-- binding by object -->
+    <button class="button" :class="activeObject" @click="changeActive">Click me</button> 
+    <!-- binding by class -->
+    <button class="button" :class="['active']">Done click me</button>
+    <!-- inline-->
+    <button style="color: yellow; background-color: blueviolet;">Inline</button>
+    <button :style="{
+      color:'yellow',
+      background:'blueviolet'
+    }">Inline Binding</button>
+    <br/>
+    <!--v-if-->
+    <h1 v-if="condition" @click="login">Login</h1>
+    <h1 v-else @click="login">Logout</h1>
+    <!--v for-->
+    <ul>
+      <li v-for="item in array" :key="item.name"> {{ item.name }} - {{ item.age }}</li>      
+    </ul>
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
       check out the
@@ -77,14 +96,46 @@ export default {
       fullName.value = `1 ${age.value}`;
     }
 
+    //binding
+    const isActive = ref(true)
+    const changeActive = () => {
+      isActive.value = !isActive.value
+    }
+
+    const activeObject = computed(()=>{
+      return {
+        active : isActive.value
+      }
+    })
+
+    //v-if
+    const condition = ref(true)
+    const login = () =>{
+      condition.value = !condition.value
+    }
+
+    //v-for
+    const array = ref([{
+      name: 'Huy',
+      age: 18
+    },{
+      name: 'Huy Ne',
+      age: 19
+    }])
     return {
       from, 
       attribute,
       age,
       userInfo,
       fullName,
+      isActive,
+      activeObject,
+      condition,
+      array,
       change,
-      changeFullName
+      changeFullName,
+      changeActive,
+      login
     }
   }
 }
@@ -106,4 +157,21 @@ li {
 a {
   color: #42b983;
 }
+.button {
+  border-radius: 15%;
+}
+.active {
+  color: #42b983;
+  background: #42b983;
+  cursor: pointer;
+  
+  /* &:hover {
+    background: white;
+  } */
+}
+
+.active:hover {
+  background: white;
+}
+
 </style>
